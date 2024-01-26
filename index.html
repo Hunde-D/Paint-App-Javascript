@@ -1,1 +1,151 @@
 
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <title>Painting App</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="container">
+  <section class="tools-board">
+    <div class="row">
+      <label class="title ">Shapes</label>
+      <ul class="options " id="ul-one">
+        <li class="option tool" id="rectangle">
+          <img src="icons/rectangle.svg" alt="">
+        </li>
+        <li class="option tool" id="circle">
+          <img src="icons/circle.svg" alt="">
+        </li>
+        <li class="option tool" id="triangle">
+          <img src="icons/triangle.svg" alt="">
+        </li><li class="option tool" id="hexagon">
+        <img src="icons/rectangle.svg" alt="">
+      </li>
+        <li class="option tool" id="star">
+          <img src="icons/circle.svg" alt="">
+        </li>
+        <li class="option tool" id="heart">
+          <img src="icons/triangle.svg" alt="">
+        </li>
+        <li class="option">
+          <input type="checkbox" id="fill-color">
+          <label for="fill-color">Colored Shape</label>
+
+        <li class="option">
+          <button class="c-btn s-btn" id="bucket-btn">
+            <img src="icons/paint-bucket.svg" alt=""><img src="icons/shapes.svg" alt=""></button>
+        </li>
+        <li class="option">
+          <button class="c-btn s-btn" id="bucket-btn2">
+            <img src="icons/paint-bucket.svg" alt=""> <img src="icons/stroke.svg" alt=""></button>
+        </li>
+      </ul>
+
+    </div>
+    <div class="row op">
+      <label class="title">Options</label>
+      <ul class="options">
+        <li class="option active tool" id="brush">
+          <img src="icons/brush.svg" alt="">
+          <span>Brush</span>
+        </li><li class="option tool" id="text">
+        <img src="icons/textarea-t.svg" alt="">
+        <span>Text</span>
+      </li>
+        <li class="option tool" id="eraser">
+          <img src="icons/eraser.svg" alt="">
+          <span>Eraser</span>
+        </li>
+        <li class="option">
+          <div>
+            <p>Size</p>
+            <input type="range" id="size-slider" min="1" max="30" value="5">
+
+          </div>
+        </li>
+        <li class="option">
+          <div>
+            <p>shadow blur</p>
+            <input type="range" id="size-slider1" min="1" max="100" value="0">
+            <p>shadow offset</p>
+            <input type="range" id="size-slider2" min="1" max="30" value="0">
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="row colors">
+      <label class="title">Colors</label>
+      <ul class="options">
+        <li class="option"></li>
+        <li class="option selected"></li>
+        <li class="option"></li>
+        <li class="option"></li>
+        <li class="option">
+          <input type="color" id="color-picker" value="#4A98F7">
+        </li>
+      </ul>
+    </div>
+    <div class="row buttons">
+      <button class="save-img"><img src="icons/download.svg" alt="">  Save</button>
+    </div>
+  </section>
+  <section class="drawing-board">
+    <canvas id="canvas" width="800" height="610">
+    </canvas>
+  </section>
+  <section class="tools-board">
+    <!--        <div class="row theme">-->
+    <!--        <label>Theme</label>-->
+    <!--          <button id="theme-mode">Dark Mode</button>-->
+    <!--        </div>-->
+    <div class="row selection-options">
+      <label>Duplicate</label>
+      <button id="duplicate" ><img src="icons/copy.svg" alt=""> duplicate</button>
+    </div>
+    <div class="row selection-options">
+      <ul class="options">
+        <li class="option  tool" id="selectMode">
+          <img src="icons/cursor.svg" alt="">
+          <span>Selection Mode</span>
+        </li>
+      </ul>
+      <div id="g-btn">
+        <button class="c-btn s-btn" id="group">group</button>
+        <button class="c-btn s-btn" id="ungroup">ungroup</button>
+        <button class="c-btn s-btn" id="selectable">selectable</button>
+        <button class="c-btn s-btn" id="unselectable">unselectable</button>
+        <button class="c-btn s-btn" id="multiselect">multiselect</button>
+        <button class="c-btn s-btn" id="discard">discard</button>
+      </div>
+      <button class="" id="remove">
+        <img src="icons/trash.svg" alt="">
+      </button>
+    </div>
+    <div class="row buttons">
+      <button class="c-btn" id="clear-canvas">Clear Canvas</button>
+    </div>
+    <div class="quickGuid">
+      <p>Quick Guid
+      <ul class="guid-list">
+        <li>fill btn on click fills the shape on dbclick strokes the shape</li>
+        <li>stroke btn onclick stroke the shape </li>
+        <li>Group btn groups selected objects together like one object</li>
+        <li>selectable btn makes all object on the canvas selectable</li>
+        <li>unselectable btn makes the active object(selected) unselectable</li>
+        <li>multiselect btn selects all the objects on the canvas,but it won't group them</li>
+        <li>discard btn unselects the selected(active) object</li>
+        <li>remove btn removes the active object from the canvas</li>
+
+      </ul></p>
+
+    </div>
+  </section>
+</div>
+<script src="lib/fabric.js" ></script>
+<script src="app.js" ></script>
+
+</body>
+</html>
