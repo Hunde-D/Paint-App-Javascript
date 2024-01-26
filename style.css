@@ -1,1 +1,258 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+body{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #cbe7f5;
+}
+.container{
+  display: flex;
+  width: 100%;
+  gap: 10px;
+  padding: 10px;
+  height: 100vh;
+}
+section{
+  background: #fff;
+  border-radius: 7px;
+}
+.op{
+  margin-top: -15px;
+}
+.tools-board{
+  width: 220px;
+  padding: 15px 22px 0;
+}
+.tools-board .row{
+  margin-bottom: 20px;
+}
+.row .options{
+  list-style: none;
+  margin: 10px 0 0 5px;
+}
+.row .options .option{
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.option:is(:hover, .active) img{
+  filter: invert(17%) sepia(90%) saturate(3000%) hue-rotate(900deg) brightness(100%) contrast(100%);
+}
+.option :where(span, label){
+  color: #5A6168;
+  cursor: pointer;
+  padding-left: 10px;
+}
+.option:is(:hover, .active) :where(span, label,button){
+  color: #4A98F7;
+}
+.option #fill-color{
+  cursor: pointer;
+  height: 14px;
+  width: 14px;
+}
+.option label{
+  font-size: 15px;
+}
+#fill-color:checked ~ label{
+  color: #4A98F7;
+}
+.option #size-slider,#size-slider1,#size-slider2{
+  width: 100%;
+  height: 5px;
+  margin-top: 10px;
+
+}
+.colors .options{
+  display: flex;
+  justify-content: space-between;
+}
+.colors .option{
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  margin-top: 3px;
+  position: relative;
+}
+.colors .option:nth-child(1){
+  background-color: #fff;
+  border: 1px solid #bfbfbf;
+}
+.colors .option:nth-child(2){
+  background-color: #000;
+}
+.colors .option:nth-child(3){
+  background-color: #E02020;
+}
+.colors .option:nth-child(4){
+  background-color: #6DD400;
+}
+.colors .option:nth-child(5){
+  background-color: #5397ea;
+}
+.colors .option.selected::before{
+  position: absolute;
+  content: "";
+  top: 50%;
+  left: 50%;
+  height: 12px;
+  width: 12px;
+  background: inherit;
+  border-radius: inherit;
+  border: 2px solid #fff;
+  transform: translate(-50%, -50%);
+}
+.colors .option:first-child.selected::before{
+  border-color: #ccc;
+}
+.option #color-picker{
+  opacity: 0;
+  cursor: pointer;
+}
+.buttons button{
+  width: 100%;
+  color: #111138;
+  border: none;
+  outline: none;
+  padding: 11px 0;
+  font-size: 0.9rem;
+  margin-bottom: 13px;
+  background: #cbe7f5;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.buttons .c-btn{
+  color: #111138;
+  border: 1px solid #598ab6;
+  transition: all 0.3s ease;
+}
+.c-btn:hover{
+  background: none;
+}
+.save-img{
+  background: #cbe7f5;
+  border: 1px solid #111138;
+  padding: 2px;
+
+}
+.save-img:hover{
+  background: none;
+  border: 1px solid black;
+}
+.drawing-board{
+  flex: 1;
+  overflow: hidden;
+}
+.drawing-board canvas{
+  border: 1px solid #f8f4f4;
+  border-radius:7px;
+}
+.selection-options{
+  display: flex;
+  flex-direction: column;
+  margin-top: -10px;
+  gap: 10px;
+}
+.selection-options div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+
+}
+#g-btn{
+  display: flex ;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+#ul-one {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.option.tool {
+  margin-right: 10px; /* Adjust the spacing between the options */
+  margin-bottom: 10px; /* Adjust the spacing between rows */
+}
+
+.s-btn{
+  width: 80px;
+  outline: none;
+  padding-top:3px ;
+  margin-left: 3px;
+  font-size: 12px;
+  background: none;
+  border: 1px solid #6C757D;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+}
+.s-btn:hover {
+  background: #bcdcf8;
+}
+.color-wheel{
+  border: none;
+  border-radius: 10px;
+}
+p{
+  font-size: 13px;
+}
+/* Add the following styles to your CSS */
+
+.dark-mode {
+  background-color: #2d2d2d;
+  color: #fff;
+}
+.dark-mode #fill-color{
+  color: white;
+}
+.dark-mode .container {
+  border-color: #333;
+}
+
+.dark-mode section {
+  background-color: #646060;
+  border: 1px solid #413f3f;
+}
+
+
+.dark-mode .options .option:hover,
+.dark-mode .options .option.active,
+.dark-mode .row.colors input:focus {
+  background-color: #414040;
+  border-radius: 5px;
+}
+
+.dark-mode .row.theme {
+  color: #fff;
+}
+.dark-mode span {
+  color: #fff;
+}
+
+.dark-mode canvas {
+  background-color: #817c7c;
+  border: 1px solid #484646;
+  border-radius:7px;
+
+}
+.quickGuid{
+  margin-top: -20px;
+  background-color: #e4eef5;
+  font-size: 10px;
+}
+
+
