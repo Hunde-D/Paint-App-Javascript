@@ -11,7 +11,8 @@ body{
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: #cbe7f5;
+  /*background: #cbe7f5;*/
+  background-image: linear-gradient(0deg, #89f7fe 0%, #66a6ff 100%);
 }
 .container{
   display: flex;
@@ -163,18 +164,18 @@ section{
   gap: 10px;
 }
 .selection-options div{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
 
 }
-#g-btn{
+#g-btn div{
   display: flex ;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  /*flex-wrap: wrap;*/
+  /*align-items: start;*/
+  gap: 20px;
   margin: 0;
 }
 #ul-one {
@@ -193,15 +194,16 @@ section{
   padding-top:3px ;
   margin-left: 3px;
   font-size: 12px;
-  background: none;
-  border: 1px solid #6C757D;
+  border: 1px solid #037ae3;
+  background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s ease;
 
 }
 .s-btn:hover {
-  background: #bcdcf8;
+  /*background: #bcdcf8;*/
+
 }
 .color-wheel{
   border: none;
@@ -213,46 +215,37 @@ p{
 /* Add the following styles to your CSS */
 
 .dark-mode {
-  background-color: #2d2d2d;
-  color: #fff;
+  background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);
 }
-.dark-mode #fill-color{
-  color: white;
-}
-.dark-mode .container {
-  border-color: #333;
+.dark-mode .left-board {
+  background-image: linear-gradient(120deg, #a6c0fe 0%, #f68084 100%);
+
 }
 
-.dark-mode section {
-  background-color: #646060;
-  border: 1px solid #413f3f;
+.dark-mode .right-board {
+  background-image: linear-gradient(120deg, #d39fe0 0%, #e7d159 100%);
+}
+.dark-mode .s-btn {
+  background-image: linear-gradient(to top, #fdd0cb 0%, #f5dcdc 100%);
 }
 
 
-.dark-mode .options .option:hover,
-.dark-mode .options .option.active,
-.dark-mode .row.colors input:focus {
-  background-color: #414040;
-  border-radius: 5px;
-}
 
-.dark-mode .row.theme {
-  color: #fff;
-}
-.dark-mode span {
-  color: #fff;
-}
-
-.dark-mode canvas {
-  background-color: #817c7c;
-  border: 1px solid #484646;
+#selectMode{
+  border: #058fd5 1px solid;
   border-radius:7px;
-
 }
-.quickGuid{
-  margin-top: -20px;
-  background-color: #e4eef5;
-  font-size: 10px;
+#theme-mode{
+  color: #111138;
+  background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
 }
-
-
+.right-board{
+  /*background-image: linear-gradient(60deg, #7c95ec 0%, #8fd3f4 100%);*/
+  background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
+  /*background-image: linear-gradient(to top, #48c6ef 0%, #6f86d6 100%);*/
+}
+.left-board{
+  /*background-image: linear-gradient(120deg, #21d0ca 0%, #8fd3f4 100%);*/
+  /*background-image: linear-gradient(to top, #b3ffab 0%, #12fff7 100%);*/
+  background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
+}
