@@ -1,49 +1,285 @@
 
-var canvas = new fabric.Canvas('canvas', {
+const canvas = new fabric.Canvas('canvas', {
     selection: true,
     isDrawingMode:false
 });
-var $ = function(id){return document.querySelector(id)};
+const $ = function(id){return document.querySelector(id)};
 ctx = canvas.getContext("2d", { willReadFrequently: true });
 
-var fillColor = $("#fill-color"),
+const  fillColor = $("#fill-color"),
     bucketFillBtn = $("#bucket-btn"),
     bucketstrokeBtn = $("#bucket-btn2"),
     sizeSlider = $("#size-slider"),
     clearCanvas = $("#clear-canvas"),
     colorPicker = $("#color-picker"),
-    remove= $("#remove"),
     drawingShadowOffset = $('#size-slider2'),
     drawingShadowWidth = $('#size-slider1'),
-    group = $('#group'),
-    ungroup = $('#ungroup'),
-    multiselect = $('#multiselect'),
-    discard = $('#discard'),
+    group_obj = $('#group'),
+    ungroup_obj = $('#ungroup'),
+    multiselect_obj = $('#multiselect'),
+    discard_obj = $('#discard'),
+    remove_obj= $("#remove"),
     unselectable_Obj = $('#unselectable'),
     selectable_Obj = $('#selectable'),
-    duplicate = $("#duplicate"),
-    saveImg = $(".save-img"),
+    duplicate_obj = $("#duplicate"),
+    saveImg = $("#save-img"),
+    intersectionCheckbox = $('#intersection'),
+    themeMode = $("#theme-mode"),
     toolBtns = document.querySelectorAll(".tool"),
     colorBtns = document.querySelectorAll(".colors .option");
-// themeMode = $("#theme-mode"),
 
 
-
-var isDrawing = false;
-var rectangle,circle,triangle,
+let isDrawing = false;
+let rectangle,circle,triangle,star,
     brushWidth = 3,
     shadowBluer = 0,
     shadowX = 0,
     shadowY = 0,
-    selectedTool = "brush",
+    selectedTool = "rectangle",
     selectedColor = "#000";
 
 // --------------------------------
+// Functions
+class Shapes{
+    drawRect = (e,pointer,points) => {
+        rectangle = new fabric.Rect({
+            left: pointer.x,
+            top: pointer.y,
+            originX: 'left',
+            originY: 'top',
+            width: pointer.x - points[0],
+            height: pointer.y - points[1],
+            fill: 'transparent',
+            strokeWidth: brushWidth,
+            stroke: selectedColor,
+            selectable: true,
+            hasControls: true,
+            hasBorders: true
+        });
+        if(fillColor.checked){
+            rectangle.set({
+                fill:selectedColor,
+                strokeWidth: brushWidth,
+                stroke: selectedColor,
+            });
+        }
+
+    }
+
+    drawCircle = (e,pointer) =>{
+        circle = new fabric.Circle({
+            left: pointer.x,
+            top: pointer.y,
+            radius: 0,
+            fill: 'transparent',
+            stroke: selectedColor, // Circle fill color
+            strokeWidth: brushWidth,
+            selectable: true, // Make the object selectable
+            hasControls: true, // Show controls (handles) when selected
+            hasBorders: true // Show borders when selected
+        });
+
+        if(fillColor.checked){
+            circle.set({
+                fill:selectedColor,
+                strokeWidth: brushWidth,
+                stroke: selectedColor,
+            });
+        }
+    }
+    drawTriangle = (e, pointer,points) => {
+        triangle = new fabric.Triangle({
+            left: pointer.x,
+            top: pointer.y,
+            width: pointer.x - points[0],
+            height: pointer.y - points[1],
+            fill: 'transparent',
+            strokeWidth: brushWidth,
+            stroke: selectedColor,
+            selectable: true,
+            hasControls: true,
+            hasBorders: true
+        });
+
+        if (fillColor.checked) {
+            triangle.set({
+                fill:selectedColor,
+                strokeWidth: brushWidth,
+                stroke: selectedColor,
+            });
+        }
+
+    };
+    drawText = (event, pointer) => {
+        const text = new fabric.IText('Your Text Here', {
+            left: pointer.x,
+            top: pointer.y,
+            fill: selectedColor,
+            fontSize: 20,
+            selectable: true,
+            hasControls: true,
+            hasBorders: true,
+        });
+
+        canvas.add(text);
+    };
+    drawStar = (event, pointer) => {
+        if (!star) {
+            // Draw the star only if it doesn't exist
+            star = new fabric.Polygon(this.getStarPoints(pointer.x, pointer.y), {
+                left: pointer.x,
+                top: pointer.y,
+                fill: 'transparent',
+                strokeWidth: brushWidth,
+                stroke: selectedColor,
+                selectable: true,
+                hasControls: true,
+                hasBorders: true
+            });
+            if (fillColor.checked) {
+                star.set({
+                    fill:selectedColor,
+                    strokeWidth: brushWidth,
+                    stroke: selectedColor,
+                });
+            }
+
+            canvas.add(star);
+        }
+
+    };
+
+    pen = ()=>{
+        // canvas.freeDrawingBrush.color = tool ==="eraser"? '#fff': "#C72C2CFF"
+        canvas.freeDrawingBrush.color = selectedColor;
+        canvas.freeDrawingBrush.shadow = new fabric.Shadow({
+            color: selectedColor,  // Shadow color
+            offsetX: shadowX,  // Horizontal offset
+            offsetY: shadowY,  // Vertical offset
+            blur: shadowBluer       // Blur radius
+        });
+        canvas.isDrawingMode = true;
+        canvas.renderAll();
+
+    }
+    brush = () => {
+        const opacity = 0.5; // Set the desired opacity value (between 0 and 1)
+
+        // Set the opacity of the freeDrawingBrush
+        canvas.freeDrawingBrush.color = new fabric.Color(selectedColor).setAlpha(opacity).toRgba();
+
+        // Set the shadow with opacity
+        canvas.freeDrawingBrush.shadow = new fabric.Shadow({
+            color: new fabric.Color(selectedColor).setAlpha(opacity).toRgba(),
+            offsetX: shadowX,
+            offsetY: shadowY,
+            blur: shadowBluer
+        });
+
+        // Set the opacity of the context used by the canvas
+        canvas.contextContainer.globalAlpha = opacity;
+
+        // Enable drawing mode
+        canvas.isDrawingMode = true;
+
+        // Render the canvas
+        canvas.renderAll();
+    };
+    getStarPoints = (x, y) => {
+        const outerRadius = 30;
+        const innerRadius = 15;
+        const numPoints = 5;
+        const angleIncrement = (2 * Math.PI) / (numPoints * 2);
+        const points = [];
+
+        for (let i = 0; i < numPoints * 2; i++) {
+            const radius = i % 2 === 0 ? outerRadius : innerRadius;
+            const angle = i * angleIncrement;
+            const pointX = x + radius * Math.cos(angle);
+            const pointY = y + radius * Math.sin(angle);
+            points.push({ x: pointX, y: pointY });
+        }
+
+        return points;
+
+    }
+
+
+}
+
+const shape = new Shapes();
+
+const startDraw = (event) => {
+    if (canvas.getActiveObject()) {
+        // If an object is selected, don't start drawing
+        return;
+    }
+
+    isDrawing = true;
+    var pointer = canvas.getPointer(event.e);
+    var points = [pointer.x, pointer.y, pointer.x, pointer.y];
+
+    if(selectedTool === "rectangle"){
+        shape.drawRect(event,pointer,points);
+        canvas.add(rectangle);
+    }else if(selectedTool === "circle"){
+        shape.drawCircle(event,pointer);
+        canvas.add(circle);
+    }else if(selectedTool === "triangle"){
+        shape.drawTriangle(event,pointer,points);
+        canvas.add(triangle);
+    }else if(selectedTool === "brush" ){
+        shape.pen();
+    }
+    canvas.renderAll(); // Force a redraw
+}
+
+
+const drawing = (event) =>{
+    if (!isDrawing) return;
+    var pointer = canvas.getPointer(event.e);
+
+    if(selectedTool === "rectangle"){
+        rectangle.set({ width: pointer.x - rectangle.left, height: pointer.y - rectangle.top });
+    }else if(selectedTool === "circle"){
+        var dx = pointer.x - circle.left;
+        var dy = pointer.y - circle.top;
+        var radius = Math.sqrt(dx * dx + dy * dy);
+        circle.set({ radius: radius });
+    }else if (selectedTool === "triangle") {
+        triangle.set({
+            width: pointer.x - triangle.left,
+            height: pointer.y - triangle.top,
+        });
+    }else if (selectedTool === "star") {
+        shape.drawStar(event,pointer);
+        const deltaX = pointer.x - star.left;
+        const deltaY = pointer.y - star.top;
+        const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+
+        // Update the size of the star based on the distance from the initial position
+        const scaleFactor = distance / 30; // Adjust the scale factor as needed
+        star.scaleX = scaleFactor;
+        star.scaleY = scaleFactor;
+    }
+
+    canvas.renderAll();
+
+}
 
 
 
-// ------------------------------
-unselectable_Obj.onclick = function (){
+const removeSelectedObject = () => {
+    const activeObject = canvas.getActiveObject();
+
+    if (activeObject) {
+        canvas.remove(activeObject);
+        canvas.discardActiveObject();
+        canvas.renderAll();
+    }
+};
+
+const unselectable = () => {
     const activeObject = canvas.getActiveObject();
 
     if (activeObject) {
@@ -61,8 +297,8 @@ unselectable_Obj.onclick = function (){
     }
 }
 
-selectable_Obj.onclick = function (){
-    var activeObject = canvas.getObjects();
+const selectable = () => {
+    let activeObject = canvas.getObjects();
 
 
     // Toggle the selectable property
@@ -84,12 +320,12 @@ selectable_Obj.onclick = function (){
     canvas.requestRenderAll();
 
 }
-discard.onclick = function (){
+
+const discard = () => {
     canvas.discardActiveObject();
     canvas.requestRenderAll();
 }
-
-multiselect.onclick = function() {
+const multiSelect = () => {
     canvas.discardActiveObject();
     var sel = new fabric.ActiveSelection(canvas.getObjects(), {
         canvas: canvas,
@@ -98,7 +334,7 @@ multiselect.onclick = function() {
     canvas.requestRenderAll();
 }
 
-group.onclick = function() {
+const group = () => {
     if (!canvas.getActiveObject()) {
         return;
     }
@@ -108,8 +344,7 @@ group.onclick = function() {
     canvas.getActiveObject().toGroup();
     canvas.requestRenderAll();
 }
-
-ungroup.onclick = function() {
+const ungroup = () => {
     if (!canvas.getActiveObject()) {
         return;
     }
@@ -119,16 +354,15 @@ ungroup.onclick = function() {
     canvas.getActiveObject().toActiveSelection();
     canvas.requestRenderAll();
 }
-// themeMode.onclick = function (){
-//     document.body.classList.toggle("dark-mode");
-//
-// }
 
-duplicate.onclick = function (){
-    canvas.getActiveObject().clone(function(cloned) {
-        _clipboard = cloned;
-    });
-
+const copy = () => {
+    if (canvas.getActiveObject()) {
+        canvas.getActiveObject().clone(function(cloned) {
+            _clipboard = cloned;
+        });
+    }
+}
+const paste = () => {
     _clipboard.clone(function(clonedObj) {
         canvas.discardActiveObject();
         clonedObj.set({
@@ -152,9 +386,46 @@ duplicate.onclick = function (){
         canvas.setActiveObject(clonedObj);
         canvas.requestRenderAll();
     });
+
 }
+const save = () =>{
+    const link = document.createElement("a"); // creating <a> element
+    link.download = `${Date.now()}.jpg`; // passing current date as link download value
+    link.href = canvas.toDataURL(); // passing canvasData as link href value
+    link.click(); // clicking link to download image
+}
+const checkInterSection = () =>{
+    if (intersectionCheckbox.checked) {
+        canvas.on({
+            'object:moving': interSection,
+            'object:scaling': interSection,
+            'object:rotating': interSection,
+        });
+    } else {
+        // Disable intersection handling
+        canvas.off('object:moving', interSection);
+        canvas.off('object:scaling', interSection);
+        canvas.off('object:rotating', interSection);
 
+        // Reset opacity for all objects
+        canvas.forEachObject(function(obj) {
+            obj.set('opacity', 1);
+        });
+    }
+}
+// Function for handling intersection
+const interSection = (options) => {
+    options.target.setCoords();
+    canvas.forEachObject(function(obj) {
+        if (obj === options.target) return;
+        obj.set('opacity', options.target.intersectsWithObject(obj) ? 0.5 : 1);
+    });
+}
+const changeTheme = () => {
+    document.body.classList.toggle("dark-mode");
 
+}
+// forEach() buttons
 toolBtns.forEach(btn => {
     btn.addEventListener("click", () => { // adding click event to all tool option
         // removing active class from the previous option and adding on current clicked option
@@ -168,6 +439,21 @@ toolBtns.forEach(btn => {
         }
     });
 });
+
+colorBtns.forEach(btn => {
+    btn.addEventListener("click", () => { // adding click event to all color button
+        // removing selected class from the previous option and adding on current clicked option
+        document.querySelector(".options .selected").classList.remove("selected");
+        btn.classList.add("selected");
+        // passing selected btn background color as selectedColor value
+        selectedColor = window.getComputedStyle(btn).getPropertyValue("background-color");
+    });
+});
+
+
+// ------------------------------
+
+
 
 sizeSlider.onchange = function() {
     canvas.freeDrawingBrush.width = parseInt(this.value) || 3;
@@ -191,27 +477,15 @@ colorPicker.addEventListener("change", () => {
     colorPicker.parentElement.style.background = colorPicker.value;
     colorPicker.parentElement.click();
 });
-colorBtns.forEach(btn => {
-    btn.addEventListener("click", () => { // adding click event to all color button
-        // removing selected class from the previous option and adding on current clicked option
-        document.querySelector(".options .selected").classList.remove("selected");
-        btn.classList.add("selected");
-        // passing selected btn background color as selectedColor value
-        selectedColor = window.getComputedStyle(btn).getPropertyValue("background-color");
-    });
-});
 
 
-clearCanvas.onclick = function() { canvas.clear() }
-remove.onclick = function() {
-    const activeObject = canvas.getActiveObject();
 
-    if (activeObject) {
-        canvas.remove(activeObject);
-        canvas.discardActiveObject();
-        canvas.renderAll();
-    }
-}
+
+
+// Event listener for remove button click
+
+
+
 bucketFillBtn.onclick= function (){
     const activeObject = canvas.getActiveObject();
 
@@ -236,204 +510,62 @@ bucketFillBtn.ondblclick = function () {
         canvas.renderAll();
     }
 }
-// bucketstrokeBtn.ondblclick = function () {
-//     const activeObject = canvas.getActiveObject();
-//
-//     if (activeObject) {
-//         activeObject.set({ stroke: 'transparent' }); // Fill with transparent color
-//         canvas.renderAll();
-//     }
-// }
-// remove.onclick = function ()  {
-//     const newThemeColor = "#423f3f"; // Change this to your desired theme color
-//
-//     // Set the background color of the canvas
-//     canvas.setBackgroundColor(newThemeColor, canvas.renderAll.bind(canvas));
-// }
+
+// Event listener for intersection checkbox change
+intersectionCheckbox.onchange = () => checkInterSection();
 
 
+// Event listener for canvas mouse events
 
-// Example of usage (you can bind this function to a button click or any other event)
+canvas.on('mouse:down', startDraw);
 
+canvas.on('mouse:move', drawing);
 
-saveImg.addEventListener("click", () => {
-    const link = document.createElement("a"); // creating <a> element
-    link.download = `${Date.now()}.jpg`; // passing current date as link download value
-    link.href = canvas.toDataURL(); // passing canvasData as link href value
-    link.click(); // clicking link to download image
+canvas.on('mouse:up', function () {
+    isDrawing = false;
+    star = null;
 });
-
-const drawText = (event, pointer) => {
-    const text = new fabric.IText('Your Text Here', {
-        left: pointer.x,
-        top: pointer.y,
-        fill: selectedColor,
-        fontSize: 20,
-        selectable: true,
-        hasControls: true,
-        hasBorders: true,
-    });
-
-    canvas.add(text);
-};
-
-const pen = ()=>{
-    // canvas.freeDrawingBrush.color = tool ==="eraser"? '#fff': "#C72C2CFF"
-    canvas.freeDrawingBrush.color = selectedColor;
-    canvas.freeDrawingBrush.shadow = new fabric.Shadow({
-        color: selectedColor,  // Shadow color
-        offsetX: shadowX,  // Horizontal offset
-        offsetY: shadowY,  // Vertical offset
-        blur: shadowBluer       // Blur radius
-    });
-    canvas.isDrawingMode = true;
-    canvas.renderAll();
-
-}
-
-const drawRect = (e,pointer,points) => {
-    rectangle = new fabric.Rect({
-        left: pointer.x,
-        top: pointer.y,
-        originX: 'left',
-        originY: 'top',
-        width: pointer.x - points[0],
-        height: pointer.y - points[1],
-        fill: 'transparent',
-        strokeWidth: brushWidth,
-        stroke: selectedColor,
-        selectable: true,
-        hasControls: true,
-        hasBorders: true
-    });
-    if(fillColor.checked){
-        rectangle.set({
-            fill:selectedColor,
-            strokeWidth: brushWidth,
-            stroke: selectedColor,
-        });
-    }
-
-}
-
-const drawCircle = (e,pointer) =>{
-    circle = new fabric.Circle({
-        left: pointer.x,
-        top: pointer.y,
-        radius: 0,
-        fill: 'transparent',
-        stroke: selectedColor, // Circle fill color
-        strokeWidth: brushWidth,
-        selectable: true, // Make the object selectable
-        hasControls: true, // Show controls (handles) when selected
-        hasBorders: true // Show borders when selected
-    });
-
-    if(fillColor.checked){
-        circle.set({
-            fill:selectedColor,
-            strokeWidth: brushWidth,
-            stroke: selectedColor,
-        });
-    }
-}
-const drawTriangle = (e, pointer,points) => {
-    triangle = new fabric.Triangle({
-        left: pointer.x,
-        top: pointer.y,
-        width: pointer.x - points[0],
-        height: pointer.y - points[1],
-        fill: 'transparent',
-        strokeWidth: brushWidth,
-        stroke: selectedColor,
-        selectable: true,
-        hasControls: true,
-        hasBorders: true
-    });
-
-    if (fillColor.checked) {
-        triangle.set({
-            fill:selectedColor,
-            strokeWidth: brushWidth,
-            stroke: selectedColor,
-        });
-    }
-
-};
-
-
-
-
-const startDraw = (event) => {
-    if (canvas.getActiveObject()) {
-        // If an object is selected, don't start drawing
-        return;
-    }
-
-    isDrawing = true;
-    var pointer = canvas.getPointer(event.e);
-    var points = [pointer.x, pointer.y, pointer.x, pointer.y];
-
-    if (selectedTool !== "brush" ) {
-        canvas.isDrawingMode = false;
-        canvas.off('path:created');
-    }
-
-    if(selectedTool === "rectangle"){
-        drawRect(event,pointer,points);
-        canvas.add(rectangle);
-    }else if(selectedTool === "circle"){
-        drawCircle(event,pointer);
-        canvas.add(circle);
-    }else if(selectedTool === "triangle"){
-        drawTriangle(event,pointer,points);
-        canvas.add(triangle);
-    }else if(selectedTool === "brush" ){
-        pen();
-    }
-    canvas.renderAll(); // Force a redraw
-}
-
-
-const drawing = (event) =>{
-    if (!isDrawing) return;
-    var pointer = canvas.getPointer(event.e);
-
-    if(selectedTool === "rectangle"){
-        rectangle.set({ width: pointer.x - rectangle.left, height: pointer.y - rectangle.top });
-    }else if(selectedTool === "circle"){
-        var dx = pointer.x - circle.left;
-        var dy = pointer.y - circle.top;
-        var radius = Math.sqrt(dx * dx + dy * dy);
-        circle.set({ radius: radius });
-    }else if (selectedTool === "triangle") {
-        triangle.set({
-            width: pointer.x - triangle.left,
-            height: pointer.y - triangle.top,
-        });
-    }
-
-    canvas.renderAll();
-
-}
-
-
-
 canvas.on('mouse:dblclick', (event) => {
     if (selectedTool === 'text') {
         const pointer = canvas.getPointer(event.e);
-        drawText(event, pointer);
+        shape.drawText(event, pointer);
         canvas.renderAll();
     }
 });
-// Event listener for mouse down
-canvas.on('mouse:down', startDraw);
 
-// Event listener for mouse move
-canvas.on('mouse:move', drawing);
 
-// Event listener for mouse up
-canvas.on('mouse:up', function () {
-    isDrawing = false;
-});
+// Event listener for buttons click
 
+themeMode.onclick =  () => changeTheme();
+
+selectable_Obj.onclick = () => selectable();
+
+unselectable_Obj.onclick = () => unselectable;
+
+group_obj.onclick = () => group();
+
+ungroup_obj.onclick = () => ungroup();
+
+multiselect_obj.onclick = () => multiSelect();
+
+discard_obj.onclick = () => discard();
+
+remove_obj.onclick = () => removeSelectedObject();
+
+duplicate_obj.onclick = () => {
+    copy();
+    paste();
+};
+
+saveImg.onclick = () => save();
+
+clearCanvas.onclick = () => canvas.clear();
+
+
+
+
+
+//TODO: fix eraser
+//TODO: add some shapes
+//TODO: finish themes
+//TODO: add brush
