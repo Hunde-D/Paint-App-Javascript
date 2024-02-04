@@ -164,10 +164,10 @@ section{
   gap: 10px;
 }
 .selection-options div{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
 
 }
 #g-btn div{
@@ -240,12 +240,9 @@ p{
   background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
 }
 .right-board{
-  /*background-image: linear-gradient(60deg, #7c95ec 0%, #8fd3f4 100%);*/
   background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
-  /*background-image: linear-gradient(to top, #48c6ef 0%, #6f86d6 100%);*/
 }
 .left-board{
-  /*background-image: linear-gradient(120deg, #21d0ca 0%, #8fd3f4 100%);*/
-  /*background-image: linear-gradient(to top, #b3ffab 0%, #12fff7 100%);*/
+
   background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
 }
