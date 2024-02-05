@@ -506,7 +506,7 @@ bucketFillBtn.ondblclick = function () {
     const activeObject = canvas.getActiveObject();
 
     if (activeObject) {
-        activeObject.set({ fill: 'transparent' }); // Fill with transparent color
+        activeObject.set({fill: 'transparent'}); // Fill with transparent color
         canvas.renderAll();
     }
 }
