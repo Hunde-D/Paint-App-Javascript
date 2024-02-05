@@ -63,9 +63,9 @@ This drawing application allows users to create and manipulate various shapes on
 
 ## Demo
 
-[![Demo](demo-thumbnail.png)](link-to-demo)
+[![Demo](img/demo.png)](https://hunde-d.github.io/Paint-App-Javascript)
 
-Check out the [live demo](link-to-demo) for a hands-on experience.
+Check out the [live demo](https://hunde-d.github.io/Paint-App-Javascript) for a hands-on experience.
 
 ## Contributing
 
