@@ -511,6 +511,55 @@ bucketFillBtn.ondblclick = function () {
     }
 }
 
+// Event listener for Ctrl+ key combination
+document.onkeydown = (e) => {
+    const activeObject = canvas.getActiveObject();
+    if (e.key === 'Backspace' && canvas.getActiveObject()) {
+        removeSelectedObject();
+        e.preventDefault();
+    }else if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+            case 'c':
+            case 'C':
+                e.preventDefault();
+                copy();
+                break;
+            case 'v':
+            case 'V':
+                e.preventDefault();
+                paste();
+                break;
+            case 'x':
+            case 'X':
+                e.preventDefault();
+                copy();
+                removeSelectedObject();
+                break;
+        }
+    } else if (activeObject) {
+        const moveDistance = 5;
+
+        switch (e.key) {
+            case 'ArrowUp':
+                activeObject.set('top', activeObject.top - moveDistance);
+                break;
+            case 'ArrowDown':
+                activeObject.set('top', activeObject.top + moveDistance);
+                break;
+            case 'ArrowLeft':
+                activeObject.set('left', activeObject.left - moveDistance);
+                break;
+            case 'ArrowRight':
+                activeObject.set('left', activeObject.left + moveDistance);
+                break;
+        }
+
+        // Update the canvas after moving the object
+        canvas.renderAll();
+    }
+}
+
+
 // Event listener for intersection checkbox change
 intersectionCheckbox.onchange = () => checkInterSection();
 
