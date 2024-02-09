@@ -30,7 +30,7 @@ const  fillColor = $("#fill-color"),
 
 
 let isDrawing = false;
-let rectangle,circle,triangle,star,
+let rectangle,circle,triangle,star,hexagon
     brushWidth = 3,
     shadowBluer = 0,
     shadowX = 0,
@@ -64,7 +64,7 @@ class Shapes{
             });
         }
 
-    }
+    };
 
     drawCircle = (e,pointer) =>{
         circle = new fabric.Circle({
@@ -86,7 +86,7 @@ class Shapes{
                 stroke: selectedColor,
             });
         }
-    }
+    };
     drawTriangle = (e, pointer,points) => {
         triangle = new fabric.Triangle({
             left: pointer.x,
@@ -110,20 +110,7 @@ class Shapes{
         }
 
     };
-    drawText = (event, pointer) => {
-        const text = new fabric.IText('Your Text Here', {
-            left: pointer.x,
-            top: pointer.y,
-            fill: selectedColor,
-            fontSize: 20,
-            selectable: true,
-            hasControls: true,
-            hasBorders: true,
-        });
-
-        canvas.add(text);
-    };
-    drawStar = (event, pointer) => {
+    drawStar = (pointer) => {
         if (!star) {
             // Draw the star only if it doesn't exist
             star = new fabric.Polygon(this.getStarPoints(pointer.x, pointer.y), {
@@ -148,6 +135,45 @@ class Shapes{
         }
 
     };
+    drawHexagon = (pointer) => {
+        if (!hexagon) {
+            hexagon = new fabric.Polygon(this.getHexagonPoints(pointer.x, pointer.y), {
+                left: pointer.x,
+                top: pointer.y,
+                fill: 'transparent',
+                strokeWidth: brushWidth,
+                stroke: selectedColor,
+                selectable: true,
+                hasControls: true,
+                hasBorders: true
+            });
+            if (fillColor.checked) {
+                hexagon.set({
+                    fill:selectedColor,
+                    strokeWidth: brushWidth,
+                    stroke: selectedColor,
+                });
+            }
+
+            canvas.add(hexagon);
+        }
+        
+
+    };
+
+    drawText = (event, pointer) => {
+        const text = new fabric.IText('Your Text Here', {
+            left: pointer.x,
+            top: pointer.y,
+            fill: selectedColor,
+            fontSize: 20,
+            selectable: true,
+            hasControls: true,
+            hasBorders: true,
+        });
+
+        canvas.add(text);
+    };
 
     pen = ()=>{
         // canvas.freeDrawingBrush.color = tool ==="eraser"? '#fff': "#C72C2CFF"
@@ -161,7 +187,7 @@ class Shapes{
         canvas.isDrawingMode = true;
         canvas.renderAll();
 
-    }
+    };
     brush = () => {
         const opacity = 0.5; // Set the desired opacity value (between 0 and 1)
 
@@ -188,7 +214,7 @@ class Shapes{
     getStarPoints = (x, y) => {
         const outerRadius = 30;
         const innerRadius = 15;
-        const numPoints = 5;
+        const numPoints = 4;
         const angleIncrement = (2 * Math.PI) / (numPoints * 2);
         const points = [];
 
@@ -203,6 +229,21 @@ class Shapes{
         return points;
 
     }
+    getHexagonPoints = (x, y) => {
+        const radius = 15; // Adjust the radius as needed
+        const angleIncrement = (2 * Math.PI) / 9; // Angle increment for hexagon
+        const points = [];
+
+        for (let i = 0; i < 9; i++) {
+            const angle = i * angleIncrement;
+            const pointX = x + radius * Math.cos(angle);
+            const pointY = y + radius * Math.sin(angle);
+            points.push({ x: pointX, y: pointY });
+        }
+
+        return points;
+
+    };
 
 
 }
@@ -252,15 +293,32 @@ const drawing = (event) =>{
             height: pointer.y - triangle.top,
         });
     }else if (selectedTool === "star") {
-        shape.drawStar(event,pointer);
-        const deltaX = pointer.x - star.left;
-        const deltaY = pointer.y - star.top;
-        const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+        shape.drawStar(pointer);
+        
+        if(star) {
+            const deltaX = pointer.x - star.left;
+            const deltaY = pointer.y - star.top;
+            const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
 
-        // Update the size of the star based on the distance from the initial position
-        const scaleFactor = distance / 30; // Adjust the scale factor as needed
-        star.scaleX = scaleFactor;
-        star.scaleY = scaleFactor;
+            // Update the size of the star based on the distance from the initial position
+            const scaleFactor = distance / 30; // Adjust the scale factor as needed
+            star.scaleX = scaleFactor;
+            star.scaleY = scaleFactor;
+        }
+        
+    }else if (selectedTool === "hexagon") {
+        shape.drawHexagon(pointer);
+        
+        if(hexagon){
+            const deltaX = pointer.x - hexagon.left;
+            const deltaY = pointer.y - hexagon.top;
+            const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+            // Update the size of the hexagon based on the distance from the initial position
+            const scaleFactor = distance / 30; // Adjust the scale factor as needed
+            hexagon.scaleX = scaleFactor;
+            hexagon.scaleY = scaleFactor;
+        }
+            
     }
 
     canvas.renderAll();
@@ -268,6 +326,7 @@ const drawing = (event) =>{
 }
 
 
+// Function to get hexagon points
 
 const removeSelectedObject = () => {
     const activeObject = canvas.getActiveObject();
@@ -573,6 +632,7 @@ canvas.on('mouse:move', drawing);
 canvas.on('mouse:up', function () {
     isDrawing = false;
     star = null;
+    hexagon = null;
 });
 canvas.on('mouse:dblclick', (event) => {
     if (selectedTool === 'text') {
