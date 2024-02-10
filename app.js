@@ -8,7 +8,8 @@ ctx = canvas.getContext("2d", { willReadFrequently: true });
 
 const  fillColor = $("#fill-color"),
     bucketFillBtn = $("#bucket-btn"),
-    bucketstrokeBtn = $("#bucket-btn2"),
+    bucketStrokeBtn = $("#bucket-btn2"),
+    polygonSide= $("#polygon-side"),
     sizeSlider = $("#size-slider"),
     clearCanvas = $("#clear-canvas"),
     colorPicker = $("#color-picker"),
@@ -30,7 +31,7 @@ const  fillColor = $("#fill-color"),
 
 
 let isDrawing = false;
-let rectangle,circle,triangle,star,hexagon
+let rectangle,circle,triangle,star,polygon,line
     brushWidth = 3,
     shadowBluer = 0,
     shadowX = 0,
@@ -135,9 +136,9 @@ class Shapes{
         }
 
     };
-    drawHexagon = (pointer) => {
-        if (!hexagon) {
-            hexagon = new fabric.Polygon(this.getHexagonPoints(pointer.x, pointer.y), {
+    drawPolygon = (pointer) => {
+        if (!polygon) {
+            polygon = new fabric.Polygon(this.getPolygonPoints(pointer.x, pointer.y), {
                 left: pointer.x,
                 top: pointer.y,
                 fill: 'transparent',
@@ -148,19 +149,26 @@ class Shapes{
                 hasBorders: true
             });
             if (fillColor.checked) {
-                hexagon.set({
+                polygon.set({
                     fill:selectedColor,
                     strokeWidth: brushWidth,
                     stroke: selectedColor,
                 });
             }
 
-            canvas.add(hexagon);
+            canvas.add(polygon);
         }
         
 
     };
-
+    drawLine = (pointer,points) => {
+        line = new fabric.Line(points, {
+            strokeWidth: 2, // Width of the line
+            stroke: 'black' // Color of the line
+        });
+        canvas.add(line);
+        
+    }
     drawText = (event, pointer) => {
         const text = new fabric.IText('Your Text Here', {
             left: pointer.x,
@@ -229,9 +237,9 @@ class Shapes{
         return points;
 
     }
-    getHexagonPoints = (x, y) => {
+    getPolygonPoints = (x, y) => {
         const radius = 15; // Adjust the radius as needed
-        const angleIncrement = (2 * Math.PI) / 9; // Angle increment for hexagon
+        const angleIncrement = (2 * Math.PI) / 9; // Angle increment for polygon
         const points = [];
 
         for (let i = 0; i < 9; i++) {
@@ -269,6 +277,8 @@ const startDraw = (event) => {
     }else if(selectedTool === "triangle"){
         shape.drawTriangle(event,pointer,points);
         canvas.add(triangle);
+    }else if(selectedTool === "line" ){
+        shape.drawLine(pointer,points);
     }else if(selectedTool === "brush" ){
         shape.pen();
     }
@@ -279,6 +289,8 @@ const startDraw = (event) => {
 const drawing = (event) =>{
     if (!isDrawing) return;
     var pointer = canvas.getPointer(event.e);
+    canvas.selectionColor= "transparent";
+    canvas.selectionBorderColor="transparent";
 
     if(selectedTool === "rectangle"){
         rectangle.set({ width: pointer.x - rectangle.left, height: pointer.y - rectangle.top });
@@ -306,19 +318,22 @@ const drawing = (event) =>{
             star.scaleY = scaleFactor;
         }
         
-    }else if (selectedTool === "hexagon") {
-        shape.drawHexagon(pointer);
+    }else if (selectedTool === "polygon") {
+        shape.drawPolygon(pointer);
         
-        if(hexagon){
-            const deltaX = pointer.x - hexagon.left;
-            const deltaY = pointer.y - hexagon.top;
+        if(polygon){
+            const deltaX = pointer.x - polygon.left;
+            const deltaY = pointer.y - polygon.top;
             const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
-            // Update the size of the hexagon based on the distance from the initial position
+            // Update the size of the polygon based on the distance from the initial position
             const scaleFactor = distance / 30; // Adjust the scale factor as needed
-            hexagon.scaleX = scaleFactor;
-            hexagon.scaleY = scaleFactor;
+            polygon.scaleX = scaleFactor;
+            polygon.scaleY = scaleFactor;
         }
             
+    }else if (selectedTool === "line") {
+        if (!isDrawing) return;
+        line.set({ x2: pointer.x, y2: pointer.y });
     }
 
     canvas.renderAll();
@@ -326,7 +341,7 @@ const drawing = (event) =>{
 }
 
 
-// Function to get hexagon points
+// Function to get polygon points
 
 const removeSelectedObject = () => {
     const activeObject = canvas.getActiveObject();
@@ -491,11 +506,12 @@ toolBtns.forEach(btn => {
         document.querySelector(".options .active").classList.remove("active");
         btn.classList.add("active");
         selectedTool = btn.id;
-
+        
         if (selectedTool === 'text') {
             canvas.isDrawingMode = false;
             canvas.off('path:created');
-        }
+        } 
+        
     });
 });
 
@@ -553,7 +569,7 @@ bucketFillBtn.onclick= function (){
         canvas.renderAll();
     }
 }
-bucketstrokeBtn.onclick= function (){
+bucketStrokeBtn.onclick= function (){
     const activeObject = canvas.getActiveObject();
 
     if (activeObject) {
@@ -632,7 +648,7 @@ canvas.on('mouse:move', drawing);
 canvas.on('mouse:up', function () {
     isDrawing = false;
     star = null;
-    hexagon = null;
+    polygon = null;
 });
 canvas.on('mouse:dblclick', (event) => {
     if (selectedTool === 'text') {

@@ -1,5 +1,1 @@
-<?xml version="1.0" standalone="no"?>
-<svg width="16.301" height="16.301" xmlns="http://www.w3.org/2000/svg" version="1.1">
-  <path d="M 10 75 Q 50 10 100 75 T 190 75" stroke="red"
-        stroke-linecap="round" stroke-dasharray="5,10,5" fill="none"/>
-  </svg>
+<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" width="20" fill="#5a6168"><path d="M293.77-154.001 107.539-480 293.77-805.999h372.46L852.461-480 666.23-154.001H293.77Zm30.46-51.998h311.54L792.539-480 635.77-754.001H324.23L167.461-480 324.23-205.999ZM480-480Z"/></svg>
