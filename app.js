@@ -250,6 +250,7 @@ class Shapes{
     spray = () => {
         canvas.freeDrawingBrush = new fabric.SprayBrush(canvas);
         canvas.freeDrawingBrush.width = 25;
+        canvas.freeDrawingBrush.color = selectedColor;
         canvas.isDrawingMode = true;
     };
     getStarPoints = (x, y,starPoints) => {
@@ -296,7 +297,6 @@ const shape = new Shapes();
 const clipping = () =>{
     
     fabric.Object.prototype.transparentCorners = false;
-    var radius = 300;
     canvas.preserveObjectStacking = true;
 
     
@@ -306,8 +306,8 @@ const clipping = () =>{
         var path = 'M 230 230 A 45 45, 0, 1, 1, 275 275 L 275 230 Z';
         var shell = new fabric.Path(path, {
             fill: '',
-            stroke: 'blue',
-            strokeWidth: 5,
+            stroke: selectedColor,
+            strokeWidth: 3,
             scaleX: 2,
             scaleY: 2,
             lockScalingX: true,
@@ -329,11 +329,11 @@ const clipping = () =>{
 
         
 
-        // img.scale(0.5).set({
-        //     left: 200,
-        //     top: 180,
-        //     clipPath: clipPath
-        // });
+        img.scale(2).set({
+            left: 200,
+            top: 180,
+            clipPath: clipPath
+        });
         
         shell.on('moving', ({ e, transform, pointer }) => {
             //  only because they are absolutePositioned
@@ -728,7 +728,7 @@ themeMode.onclick =  () => changeTheme();
 
 selectable_Obj.onclick = () => selectable();
 
-unselectable_Obj.onclick = () => unselectable;
+unselectable_Obj.onclick = () => unselectable();
 
 group_obj.onclick = () => group();
 
