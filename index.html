@@ -30,8 +30,22 @@
         <li class="option tool" id="line">
           <img src="icons/line.svg" alt="">
         </li>
-        <li>
-          <input type="number" class="polygon-side">
+        <li class="option tool active" id="diamond">
+          <img src="icons/rectangle.svg" alt="">
+        </li>
+        <li class="option tool" id="">
+          <img src="icons/circle.svg" alt="">
+        </li>
+        <li class="option tool" id="triange">
+          <img src="icons/triangle.svg" alt="">
+        </li><li class="option tool" id="str">
+        <img src="icons/star.svg" alt="">
+      </li>
+        <li class="option tool" id="polygo">
+          <img src="icons/hexagon.svg" alt="">
+        </li>
+        <li class="option tool" id="lin">
+          <img src="icons/line.svg" alt="">
         </li>
         <li class="option">
           <input type="checkbox" id="fill-color" checked>
@@ -83,6 +97,9 @@
         </li>
       </ul>
     </div>
+    <div class="row buttons">
+      <button class="save-img" id="save-img"><img src="icons/download.svg" alt="">  Save</button>
+    </div>
   </section>
   <section class="drawing-board">
     <canvas id="canvas" width="800" height="610">
@@ -130,16 +147,13 @@
         </div>
 
       </div>
-      <button id="duplicate" ><img src="icons/copy.svg" alt=""> duplicate</button>
-      <button class="" id="remove">
+      <button id="duplicate" class="s-btn c-btn" ><img src="icons/copy.svg" alt=""> duplicate</button>
+      <button class="c-btn s-btn" id="remove">
         <img src="icons/trash.svg" alt="">
       </button>
     </div>
     <div class="row buttons">
       <button class="c-btn" id="clear-canvas">Clear Canvas</button>
-    </div>
-    <div class="row buttons">
-      <button class="save-img" id="save-img"><img src="icons/download.svg" alt="">  Save</button>
     </div>
   </section>
 </div>

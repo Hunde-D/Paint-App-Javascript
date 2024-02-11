@@ -3,13 +3,16 @@ const canvas = new fabric.Canvas('canvas', {
     selection: true,
     isDrawingMode:false
 });
+
 const $ = function(id){return document.querySelector(id)};
 ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+canvas.selectionColor='transparent';
+canvas.selectionBorderColor="transparent";
 
 const  fillColor = $("#fill-color"),
     bucketFillBtn = $("#bucket-btn"),
     bucketStrokeBtn = $("#bucket-btn2"),
-    polygonSide= $("#polygon-side"),
     sizeSlider = $("#size-slider"),
     clearCanvas = $("#clear-canvas"),
     colorPicker = $("#color-picker"),
@@ -32,15 +35,14 @@ const  fillColor = $("#fill-color"),
 
 let isDrawing = false;
 let rectangle,circle,triangle,star,polygon,line
-    brushWidth = 3,
+    brushWidth = 5,
     shadowBluer = 0,
     shadowX = 0,
     shadowY = 0,
     selectedTool = "rectangle",
     selectedColor = "#000";
 
-// --------------------------------
-// Functions
+// class of shape
 class Shapes{
     drawRect = (e,pointer,points) => {
         rectangle = new fabric.Rect({
@@ -73,11 +75,11 @@ class Shapes{
             top: pointer.y,
             radius: 0,
             fill: 'transparent',
-            stroke: selectedColor, // Circle fill color
+            stroke: selectedColor, 
             strokeWidth: brushWidth,
-            selectable: true, // Make the object selectable
-            hasControls: true, // Show controls (handles) when selected
-            hasBorders: true // Show borders when selected
+            selectable: true, 
+            hasControls: true,
+            hasBorders: true, 
         });
 
         if(fillColor.checked){
@@ -122,7 +124,9 @@ class Shapes{
                 stroke: selectedColor,
                 selectable: true,
                 hasControls: true,
-                hasBorders: true
+                hasBorders: true,
+                // angle: 90
+
             });
             if (fillColor.checked) {
                 star.set({
@@ -170,6 +174,7 @@ class Shapes{
         
     }
     drawText = (event, pointer) => {
+        
         const text = new fabric.IText('Your Text Here', {
             left: pointer.x,
             top: pointer.y,
@@ -184,23 +189,26 @@ class Shapes{
     };
 
     pen = ()=>{
+       
+        canvas.contextContainer.globalAlpha = 1;
         // canvas.freeDrawingBrush.color = tool ==="eraser"? '#fff': "#C72C2CFF"
         canvas.freeDrawingBrush.color = selectedColor;
         canvas.freeDrawingBrush.shadow = new fabric.Shadow({
-            color: selectedColor,  // Shadow color
-            offsetX: shadowX,  // Horizontal offset
-            offsetY: shadowY,  // Vertical offset
-            blur: shadowBluer       // Blur radius
+            color: selectedColor,  
+            offsetX: shadowX,  
+            offsetY: shadowY,  
+            blur: shadowBluer       
         });
         canvas.isDrawingMode = true;
         canvas.renderAll();
 
     };
     brush = () => {
-        const opacity = 0.5; // Set the desired opacity value (between 0 and 1)
+        const opacity = 0.3;
 
         // Set the opacity of the freeDrawingBrush
         canvas.freeDrawingBrush.color = new fabric.Color(selectedColor).setAlpha(opacity).toRgba();
+        canvas.freeDrawingBrush.width = brushWidth;
 
         // Set the shadow with opacity
         canvas.freeDrawingBrush.shadow = new fabric.Shadow({
@@ -212,17 +220,17 @@ class Shapes{
 
         // Set the opacity of the context used by the canvas
         canvas.contextContainer.globalAlpha = opacity;
-
-        // Enable drawing mode
         canvas.isDrawingMode = true;
-
-        // Render the canvas
         canvas.renderAll();
+
+        // Reset the globalAlpha to 1 
+        canvas.contextContainer.globalAlpha = 1;
     };
+    
     getStarPoints = (x, y) => {
         const outerRadius = 30;
         const innerRadius = 15;
-        const numPoints = 4;
+        const numPoints = 6;
         const angleIncrement = (2 * Math.PI) / (numPoints * 2);
         const points = [];
 
@@ -238,11 +246,11 @@ class Shapes{
 
     }
     getPolygonPoints = (x, y) => {
-        const radius = 15; // Adjust the radius as needed
-        const angleIncrement = (2 * Math.PI) / 9; // Angle increment for polygon
+        const radius = 15; 
+        const angleIncrement = (2 * Math.PI) / 4;
         const points = [];
 
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < 4; i++) {
             const angle = i * angleIncrement;
             const pointX = x + radius * Math.cos(angle);
             const pointY = y + radius * Math.sin(angle);
@@ -255,9 +263,13 @@ class Shapes{
 
 
 }
-
+// Create a new instance of the Shapes class
 const shape = new Shapes();
 
+//FUNCTIONS
+//---------
+
+// Function to start drawing (when the mouse button is pressed)
 const startDraw = (event) => {
     if (canvas.getActiveObject()) {
         // If an object is selected, don't start drawing
@@ -265,9 +277,12 @@ const startDraw = (event) => {
     }
 
     isDrawing = true;
+    // Get the pointer coordinates
     var pointer = canvas.getPointer(event.e);
+    // Create an array with the pointer coordinates
     var points = [pointer.x, pointer.y, pointer.x, pointer.y];
-
+    
+    // Draw the selected shape
     if(selectedTool === "rectangle"){
         shape.drawRect(event,pointer,points);
         canvas.add(rectangle);
@@ -279,19 +294,22 @@ const startDraw = (event) => {
         canvas.add(triangle);
     }else if(selectedTool === "line" ){
         shape.drawLine(pointer,points);
-    }else if(selectedTool === "brush" ){
+    }else if(selectedTool === "pen" ){
         shape.pen();
+    }else if(selectedTool === "brush" ){
+        shape.brush();
+    }else if(selectedTool === "text" ){
+        // shape.drawText(event,pointer);
     }
     canvas.renderAll(); // Force a redraw
 }
 
-
+// Function to draw the selected shape (when the mouse is moved)
 const drawing = (event) =>{
     if (!isDrawing) return;
     var pointer = canvas.getPointer(event.e);
-    canvas.selectionColor= "transparent";
-    canvas.selectionBorderColor="transparent";
-
+   
+    // Update the shape based on the pointer coordinates
     if(selectedTool === "rectangle"){
         rectangle.set({ width: pointer.x - rectangle.left, height: pointer.y - rectangle.top });
     }else if(selectedTool === "circle"){
@@ -311,9 +329,8 @@ const drawing = (event) =>{
             const deltaX = pointer.x - star.left;
             const deltaY = pointer.y - star.top;
             const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
-
-            // Update the size of the star based on the distance from the initial position
-            const scaleFactor = distance / 30; // Adjust the scale factor as needed
+            
+            const scaleFactor = distance / 30; 
             star.scaleX = scaleFactor;
             star.scaleY = scaleFactor;
         }
@@ -325,8 +342,8 @@ const drawing = (event) =>{
             const deltaX = pointer.x - polygon.left;
             const deltaY = pointer.y - polygon.top;
             const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
-            // Update the size of the polygon based on the distance from the initial position
-            const scaleFactor = distance / 30; // Adjust the scale factor as needed
+            
+            const scaleFactor = distance / 30; 
             polygon.scaleX = scaleFactor;
             polygon.scaleY = scaleFactor;
         }
@@ -335,14 +352,11 @@ const drawing = (event) =>{
         if (!isDrawing) return;
         line.set({ x2: pointer.x, y2: pointer.y });
     }
-
     canvas.renderAll();
-
 }
 
 
-// Function to get polygon points
-
+// Function to remove the selected object (delete from the canvas)
 const removeSelectedObject = () => {
     const activeObject = canvas.getActiveObject();
 
@@ -353,52 +367,43 @@ const removeSelectedObject = () => {
     }
 };
 
+// Function to set selectable property to false
 const unselectable = () => {
     const activeObject = canvas.getActiveObject();
 
     if (activeObject) {
-        // Toggle the selectable property
         activeObject.selectable = !activeObject.selectable;
-
-        // If selectable is set to false, also deselect the object
         if (!activeObject.selectable) {
             canvas.discardActiveObject();
         }
-
-        // Render the canvas
         canvas.renderAll();
-
     }
 }
 
+// Function to set selectable property to true
 const selectable = () => {
     let activeObject = canvas.getObjects();
-
-
-    // Toggle the selectable property
     activeObject.forEach((obj) =>{
         obj.set({
             selectable: true
         })
     })
-
-    // If selectable is set to false, also deselect the object
-
     canvas.discardActiveObject();
-    // Render the canvas
     canvas.renderAll();
     var sel = new fabric.ActiveSelection(canvas.getObjects(), {
         canvas: canvas,
     });
     canvas.setActiveObject(sel);
     canvas.requestRenderAll();
-
 }
 
+// Function to discard  the active object (unselect)
 const discard = () => {
     canvas.discardActiveObject();
     canvas.requestRenderAll();
 }
+
+// Function to select multiple objects
 const multiSelect = () => {
     canvas.discardActiveObject();
     var sel = new fabric.ActiveSelection(canvas.getObjects(), {
@@ -408,6 +413,7 @@ const multiSelect = () => {
     canvas.requestRenderAll();
 }
 
+// Function to group the selected objects ( to a single object)
 const group = () => {
     if (!canvas.getActiveObject()) {
         return;
@@ -418,6 +424,8 @@ const group = () => {
     canvas.getActiveObject().toGroup();
     canvas.requestRenderAll();
 }
+
+// Function to ungroup the selected objects 
 const ungroup = () => {
     if (!canvas.getActiveObject()) {
         return;
@@ -429,6 +437,7 @@ const ungroup = () => {
     canvas.requestRenderAll();
 }
 
+// Function to copy the selected object
 const copy = () => {
     if (canvas.getActiveObject()) {
         canvas.getActiveObject().clone(function(cloned) {
@@ -436,6 +445,8 @@ const copy = () => {
         });
     }
 }
+
+// Function to paste the copied object
 const paste = () => {
     _clipboard.clone(function(clonedObj) {
         canvas.discardActiveObject();
@@ -462,12 +473,16 @@ const paste = () => {
     });
 
 }
+
+// Function to save the canvas as image
 const save = () =>{
     const link = document.createElement("a"); // creating <a> element
     link.download = `${Date.now()}.jpg`; // passing current date as link download value
     link.href = canvas.toDataURL(); // passing canvasData as link href value
     link.click(); // clicking link to download image
 }
+
+// Function to check intersection of objects
 const checkInterSection = () =>{
     if (intersectionCheckbox.checked) {
         canvas.on({
@@ -487,6 +502,7 @@ const checkInterSection = () =>{
         });
     }
 }
+
 // Function for handling intersection
 const interSection = (options) => {
     options.target.setCoords();
@@ -495,28 +511,42 @@ const interSection = (options) => {
         obj.set('opacity', options.target.intersectsWithObject(obj) ? 0.5 : 1);
     });
 }
+
+// Function to change theme
 const changeTheme = () => {
-    document.body.classList.toggle("dark-mode");
+    document.body.classList.toggle("theme-toggle");
 
 }
-// forEach() buttons
+
+// CLICK EVENT LISTENERS
+//----------------------
+
+// Event listener for tool button click
 toolBtns.forEach(btn => {
-    btn.addEventListener("click", () => { // adding click event to all tool option
+    btn.addEventListener("click", () => {
         // removing active class from the previous option and adding on current clicked option
         document.querySelector(".options .active").classList.remove("active");
         btn.classList.add("active");
         selectedTool = btn.id;
-        
+
         if (selectedTool === 'text') {
             canvas.isDrawingMode = false;
-            canvas.off('path:created');
-        } 
-        
+        }
+
+        // If brush is selected, set the maximum value of the size slider
+        if (selectedTool === 'brush') {
+            brushWidth = 28;
+            sizeSlider.value = 28;
+        } else {
+            brushWidth = 5;
+            sizeSlider.value = 5;
+        }
     });
 });
 
+// Event listener for color button click
 colorBtns.forEach(btn => {
-    btn.addEventListener("click", () => { // adding click event to all color button
+    btn.addEventListener("click", () => {
         // removing selected class from the previous option and adding on current clicked option
         document.querySelector(".options .selected").classList.remove("selected");
         btn.classList.add("selected");
@@ -525,42 +555,7 @@ colorBtns.forEach(btn => {
     });
 });
 
-
-// ------------------------------
-
-
-
-sizeSlider.onchange = function() {
-    canvas.freeDrawingBrush.width = parseInt(this.value) || 3;
-    brushWidth = parseInt(sizeSlider.value) || 3;
-};
-drawingShadowWidth.onchange = function() {
-    canvas.freeDrawingBrush.shadow.blur = parseInt(this.value, 10) || 0;
-    shadowBluer = parseInt(this.value, 10)||0;
-
-};
-drawingShadowOffset.onchange = function() {
-    canvas.freeDrawingBrush.shadow.offsetX = parseInt(this.value, 10) || 0;
-    canvas.freeDrawingBrush.shadow.offsetY = parseInt(this.value, 10) || 0;
-    shadowX =parseInt(this.value, 10) || 0;
-    shadowY =parseInt(this.value, 10) || 0;
-
-};
-
-colorPicker.addEventListener("change", () => {
-    // passing picked color value from color picker to last color btn background
-    colorPicker.parentElement.style.background = colorPicker.value;
-    colorPicker.parentElement.click();
-});
-
-
-
-
-
-// Event listener for remove button click
-
-
-
+// Event listener for fill color button click (fill with color)
 bucketFillBtn.onclick= function (){
     const activeObject = canvas.getActiveObject();
 
@@ -569,6 +564,18 @@ bucketFillBtn.onclick= function (){
         canvas.renderAll();
     }
 }
+
+// Event listener for fill color button double click (Fill with transparent color)
+bucketFillBtn.ondblclick = function () {
+    const activeObject = canvas.getActiveObject();
+
+    if (activeObject) {
+        activeObject.set({fill: 'transparent'}); 
+        canvas.renderAll();
+    }
+}
+
+// Event listener for stroke color button click (stroke with color)
 bucketStrokeBtn.onclick= function (){
     const activeObject = canvas.getActiveObject();
 
@@ -577,19 +584,77 @@ bucketStrokeBtn.onclick= function (){
         canvas.renderAll();
     }
 }
-bucketFillBtn.ondblclick = function () {
-    const activeObject = canvas.getActiveObject();
 
-    if (activeObject) {
-        activeObject.set({fill: 'transparent'}); // Fill with transparent color
-        canvas.renderAll();
-    }
-}
+// Event listener for buttons click
+themeMode.onclick =  () => changeTheme();
+
+selectable_Obj.onclick = () => selectable();
+
+unselectable_Obj.onclick = () => unselectable;
+
+group_obj.onclick = () => group();
+
+ungroup_obj.onclick = () => ungroup();
+
+multiselect_obj.onclick = () => multiSelect();
+
+discard_obj.onclick = () => discard();
+
+remove_obj.onclick = () => removeSelectedObject();
+
+duplicate_obj.onclick = () => {
+    copy();
+    paste();
+};
+
+saveImg.onclick = () => save();
+
+clearCanvas.onclick = () => canvas.clear();
+
+
+// ONCHANGE EVENT LISTENERS
+// ------------------------
+
+// Event listener for size slider change
+sizeSlider.onchange = function() {
+    canvas.freeDrawingBrush.width = parseInt(this.value) || 3;
+    brushWidth = parseInt(sizeSlider.value) || 5;
+};
+
+// Event listener for shadow bluer slider change
+drawingShadowWidth.onchange = function() {
+    canvas.freeDrawingBrush.shadow.blur = parseInt(this.value, 10) || 0;
+    shadowBluer = parseInt(this.value, 10)||0;
+
+};
+
+// Event listener for shadow offset slider change
+drawingShadowOffset.onchange = function() {
+    canvas.freeDrawingBrush.shadow.offsetX = parseInt(this.value, 10) || 0;
+    canvas.freeDrawingBrush.shadow.offsetY = parseInt(this.value, 10) || 0;
+    shadowX =parseInt(this.value, 10) || 0;
+    shadowY =parseInt(this.value, 10) || 0;
+
+};
+
+// Event listener for color picker change
+colorPicker.addEventListener("change", () => {
+    // passing picked color value from color picker to last color btn background
+    colorPicker.parentElement.style.background = colorPicker.value;
+    colorPicker.parentElement.click();
+});
+
+// Event listener for intersection checkbox change
+intersectionCheckbox.onchange = () => checkInterSection();
+
+
+//KEYDOWN EVENT LISTENERS
+//-----------------------
 
 // Event listener for Ctrl+ key combination
 document.onkeydown = (e) => {
     const activeObject = canvas.getActiveObject();
-    if (e.key === 'Backspace' && canvas.getActiveObject()) {
+    if (e.key === 'Backspace' && canvas.getActiveObject() && !(activeObject instanceof fabric.IText && activeObject.isEditing)) {
         removeSelectedObject();
         e.preventDefault();
     }else if (e.ctrlKey || e.metaKey) {
@@ -628,19 +693,12 @@ document.onkeydown = (e) => {
                 activeObject.set('left', activeObject.left + moveDistance);
                 break;
         }
-
-        // Update the canvas after moving the object
+        
         canvas.renderAll();
     }
 }
 
-
-// Event listener for intersection checkbox change
-intersectionCheckbox.onchange = () => checkInterSection();
-
-
 // Event listener for canvas mouse events
-
 canvas.on('mouse:down', startDraw);
 
 canvas.on('mouse:move', drawing);
@@ -650,6 +708,7 @@ canvas.on('mouse:up', function () {
     star = null;
     polygon = null;
 });
+
 canvas.on('mouse:dblclick', (event) => {
     if (selectedTool === 'text') {
         const pointer = canvas.getPointer(event.e);
@@ -658,39 +717,3 @@ canvas.on('mouse:dblclick', (event) => {
     }
 });
 
-
-// Event listener for buttons click
-
-themeMode.onclick =  () => changeTheme();
-
-selectable_Obj.onclick = () => selectable();
-
-unselectable_Obj.onclick = () => unselectable;
-
-group_obj.onclick = () => group();
-
-ungroup_obj.onclick = () => ungroup();
-
-multiselect_obj.onclick = () => multiSelect();
-
-discard_obj.onclick = () => discard();
-
-remove_obj.onclick = () => removeSelectedObject();
-
-duplicate_obj.onclick = () => {
-    copy();
-    paste();
-};
-
-saveImg.onclick = () => save();
-
-clearCanvas.onclick = () => canvas.clear();
-
-
-
-
-
-//TODO: fix eraser
-//TODO: add some shapes
-//TODO: finish themes
-//TODO: add brush
