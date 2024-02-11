@@ -1,9 +1,7 @@
-
 const canvas = new fabric.Canvas('canvas', {
     selection: true,
     isDrawingMode:false
 });
-
 
 const $ = function(id){return document.querySelector(id)};
 ctx = canvas.getContext("2d", { willReadFrequently: true });
@@ -63,6 +61,17 @@ class Shapes{
             hasControls: true,
             hasBorders: true
         });
+
+        //clip path
+
+        // var clipRect = new fabric.Rect({
+        //     left: 50,
+        //     top: 50,
+        //     width: 200,
+        //     height: 200
+        // });
+        // canvas.clipPath = clipRect;
+
         if(fillColor.checked){
             rectangle.set({
                 fill:selectedColor,
@@ -79,11 +88,11 @@ class Shapes{
             top: pointer.y,
             radius: 0,
             fill: 'transparent',
-            stroke: selectedColor, 
+            stroke: selectedColor,
             strokeWidth: brushWidth,
-            selectable: true, 
+            selectable: true,
             hasControls: true,
-            hasBorders: true, 
+            hasBorders: true,
         });
 
         if(fillColor.checked){
@@ -118,7 +127,7 @@ class Shapes{
 
     };
     drawStar = (pointer, starPoint) => {
-        
+
         if (!star) {
             // Draw the star only if it doesn't exist
             star = new fabric.Polygon(this.getStarPoints(pointer.x, pointer.y,starPoint), {
@@ -169,7 +178,7 @@ class Shapes{
 
             canvas.add(polygon);
         }
-        
+
 
     };
     drawLine = (pointer,points) => {
@@ -178,10 +187,10 @@ class Shapes{
             stroke: 'black' // Color of the line
         });
         canvas.add(line);
-        
+
     }
     drawText = (event, pointer) => {
-        
+
         const text = new fabric.IText('Your Text Here', {
             left: pointer.x,
             top: pointer.y,
@@ -196,15 +205,15 @@ class Shapes{
     };
 
     pen = ()=>{
-       
+
         canvas.contextContainer.globalAlpha = 1;
         // canvas.freeDrawingBrush.color = tool ==="eraser"? '#fff': "#C72C2CFF"
         canvas.freeDrawingBrush.color = selectedColor;
         canvas.freeDrawingBrush.shadow = new fabric.Shadow({
-            color: selectedColor,  
-            offsetX: shadowX,  
-            offsetY: shadowY,  
-            blur: shadowBluer       
+            color: selectedColor,
+            offsetX: shadowX,
+            offsetY: shadowY,
+            blur: shadowBluer
         });
         canvas.isDrawingMode = true;
         canvas.renderAll();
@@ -230,10 +239,20 @@ class Shapes{
         canvas.isDrawingMode = true;
         canvas.renderAll();
 
-        // Reset the globalAlpha to 1 
+        // Reset the globalAlpha to 1
         canvas.contextContainer.globalAlpha = 1;
     };
-    
+    eraser = () => {
+        canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
+        canvas.freeDrawingBrush.width = 10;
+        canvas.isDrawingMode = true;
+    };
+    undo = () => {
+        canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
+        canvas.freeDrawingBrush.width = 10;
+        canvas.freeDrawingBrush.inverted = true;
+        canvas.isDrawingMode = true;
+    };
     getStarPoints = (x, y,starPoints) => {
         const outerRadius = 30;
         const innerRadius = 15;
@@ -253,7 +272,7 @@ class Shapes{
 
     }
     getPolygonPoints = (x, y, polygonPoints) => {
-        const radius = 15; 
+        const radius = 15;
         const angleIncrement = (2 * Math.PI) / polygonPoints;
         const points = [];
 
@@ -288,7 +307,7 @@ const startDraw = (event) => {
     var pointer = canvas.getPointer(event.e);
     // Create an array with the pointer coordinates
     var points = [pointer.x, pointer.y, pointer.x, pointer.y];
-    
+
     // Draw the selected shape
     if(selectedTool === "rectangle"){
         shape.drawRect(event,pointer,points);
@@ -307,6 +326,8 @@ const startDraw = (event) => {
         shape.brush();
     }else if(selectedTool === "text" ){
         // shape.drawText(event,pointer);
+    }else if(selectedTool === "eraser"){
+        shape.eraser();
     }
     canvas.renderAll(); // Force a redraw
 }
@@ -315,7 +336,7 @@ const startDraw = (event) => {
 const drawing = (event) =>{
     if (!isDrawing) return;
     var pointer = canvas.getPointer(event.e);
-   
+
     // Update the shape based on the pointer coordinates
     if(selectedTool === "rectangle"){
         rectangle.set({ width: pointer.x - rectangle.left, height: pointer.y - rectangle.top });
@@ -332,31 +353,31 @@ const drawing = (event) =>{
     }else if (selectedTool === "star" || selectedTool === "chrisMassStar" || selectedTool === "octaStar" || selectedTool === "diamond") {
         let starPoints = checkStarType(selectedTool);
         shape.drawStar(pointer,starPoints);
-        
+
         if(star) {
             const deltaX = pointer.x - star.left;
             const deltaY = pointer.y - star.top;
             const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
-            
-            const scaleFactor = distance / 30; 
+
+            const scaleFactor = distance / 30;
             star.scaleX = scaleFactor;
             star.scaleY = scaleFactor;
         }
-        
+
     }else if (selectedTool === "hexagon" || selectedTool === "pentagon" || selectedTool === "octagon" || selectedTool === "square") {
         let polygonPoints = checkPolygonType( selectedTool);
         shape.drawPolygon(pointer, polygonPoints);
-        
+
         if(polygon){
             const deltaX = pointer.x - polygon.left;
             const deltaY = pointer.y - polygon.top;
             const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
-            
-            const scaleFactor = distance / 30; 
+
+            const scaleFactor = distance / 30;
             polygon.scaleX = scaleFactor;
             polygon.scaleY = scaleFactor;
         }
-            
+
     }else if (selectedTool === "line") {
         if (!isDrawing) return;
         line.set({ x2: pointer.x, y2: pointer.y });
@@ -388,7 +409,7 @@ const checkPolygonType = (selectedTool) =>{
     }else if(selectedTool === "octagon"){
         polyPoints = 8;
     }
-    return polyPoints;   
+    return polyPoints;
 }
 
 // Function to remove the selected object (delete from the canvas)
@@ -460,7 +481,7 @@ const group = () => {
     canvas.requestRenderAll();
 }
 
-// Function to ungroup the selected objects 
+// Function to ungroup the selected objects
 const ungroup = () => {
     if (!canvas.getActiveObject()) {
         return;
@@ -566,6 +587,16 @@ toolBtns.forEach(btn => {
 
         if (selectedTool === 'text') {
             canvas.isDrawingMode = false;
+        } else if (selectedTool === 'undo') {
+            canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
+            canvas.freeDrawingBrush.inverted = true;
+            canvas.freeDrawingBrush.width = 10;
+        }else if (selectedTool === 'eraser') {
+            canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
+        } else if (selectedTool === 'brush'|| selectedTool === 'pen') {
+            canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+        }else {
+            canvas.isDrawingMode = false;
         }
 
         // If brush is selected, set the maximum value of the size slider
@@ -605,7 +636,7 @@ bucketFillBtn.ondblclick = function () {
     const activeObject = canvas.getActiveObject();
 
     if (activeObject) {
-        activeObject.set({fill: 'transparent'}); 
+        activeObject.set({fill: 'transparent'});
         canvas.renderAll();
     }
 }
@@ -728,7 +759,7 @@ document.onkeydown = (e) => {
                 activeObject.set('left', activeObject.left + moveDistance);
                 break;
         }
-        
+
         canvas.renderAll();
     }
 }

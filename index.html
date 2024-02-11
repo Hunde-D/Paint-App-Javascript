@@ -13,11 +13,11 @@
     <div class="row">
       <label class="title ">Shapes</label>
       <ul class="options " id="ul-one">
-        <li class="option tool" id="square">
-          <img src="icons/square.svg" width="20" height="20"  alt="">
-        </li>
         <li class="option tool active" id="rectangle">
           <img src="icons/rectangle.svg" width="20" height="20" alt="">
+        </li>
+        <li class="option tool" id="square">
+          <img src="icons/square.svg" width="14" height="14"  alt="">
         </li>
         <li class="option tool" id="circle">
           <img src="icons/circle.svg" width="20" height="20" alt="">
@@ -101,6 +101,10 @@
           <img src="icons/eraser.svg" alt="">
           <span>Eraser</span>
         </li>
+        <li class="option tool" id="undo">
+          <img src="icons/eraser_off.svg" alt="">
+          <span>Eraser</span>
+        </li>
       </ul>
     </div>
     <div class="row buttons">
@@ -165,6 +169,7 @@
 </div>
 
 <script src="lib/fabric.js" ></script>
+<script src="eraser.js" ></script>
 <script src="app.js" ></script>
 
 </body>
