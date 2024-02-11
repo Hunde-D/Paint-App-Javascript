@@ -4,6 +4,7 @@ const canvas = new fabric.Canvas('canvas', {
     isDrawingMode:false
 });
 
+
 const $ = function(id){return document.querySelector(id)};
 ctx = canvas.getContext("2d", { willReadFrequently: true });
 
@@ -29,9 +30,12 @@ const  fillColor = $("#fill-color"),
     saveImg = $("#save-img"),
     intersectionCheckbox = $('#intersection'),
     themeMode = $("#theme-mode"),
+    board =document.querySelector(".drawing-board"),
     toolBtns = document.querySelectorAll(".tool"),
     colorBtns = document.querySelectorAll(".colors .option");
 
+canvas.setWidth(board.clientWidth);
+canvas.setHeight(board.clientHeight);
 
 let isDrawing = false;
 let rectangle,circle,triangle,star,polygon,line

@@ -47,21 +47,25 @@
         <li class="option tool" id="lin">
           <img src="icons/line.svg" alt="">
         </li>
-        <li class="option">
-          <input type="checkbox" id="fill-color" checked>
-          <label for="fill-color">Colored Shape</label>
-        <li class="option">
-          <input type="checkbox" id="intersection">
-          <label for="intersection">Check Intersection</label>
-        </li>
-        <li class="option">
-          <button class="c-btn s-btn" id="bucket-btn">
-            <img src="icons/paint-bucket.svg" alt=""><img src="icons/shapes.svg" alt=""></button>
-        </li>
-        <li class="option">
-          <button class="c-btn s-btn" id="bucket-btn2">
-            <img src="icons/paint-bucket.svg" alt=""> <img src="icons/stroke.svg" alt=""></button>
-        </li>
+        <div>
+          <li class="option">
+            <input type="checkbox" id="fill-color" checked>
+            <label for="fill-color">Colored Shape</label>
+          <li class="option">
+            <input type="checkbox" id="intersection">
+            <label for="intersection">Check Intersection</label>
+          </li>
+          <div class =" fill-buckets">
+          <li class="option">
+            <button class="c-btn s-btn" id="bucket-btn">
+              <img src="icons/paint-bucket.svg" alt=""><img src="icons/shapes.svg" alt=""></button>
+          </li>
+          <li class="option">
+            <button class="c-btn s-btn" id="bucket-btn2">
+              <img src="icons/paint-bucket.svg" alt=""> <img src="icons/stroke.svg" alt=""></button>
+          </li>
+          </div>
+        </div>
       </ul>
     </div>
     <div class="row colors">
@@ -78,7 +82,7 @@
     </div>
     <div class="row op">
       <label class="title">Options</label>
-      <ul class="options">
+      <ul class="options ">
         <li class="option  tool" id="pen">
           <img src="icons/pen.svg" alt="">
           <span>Pen</span>
@@ -102,7 +106,7 @@
     </div>
   </section>
   <section class="drawing-board">
-    <canvas id="canvas" width="800" height="610">
+    <canvas id="canvas"  >
     </canvas>
   </section>
   <section class="tools-board right-board ">
