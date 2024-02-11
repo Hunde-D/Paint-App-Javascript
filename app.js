@@ -117,10 +117,11 @@ class Shapes{
         }
 
     };
-    drawStar = (pointer) => {
+    drawStar = (pointer, starPoint) => {
+        
         if (!star) {
             // Draw the star only if it doesn't exist
-            star = new fabric.Polygon(this.getStarPoints(pointer.x, pointer.y), {
+            star = new fabric.Polygon(this.getStarPoints(pointer.x, pointer.y,starPoint), {
                 left: pointer.x,
                 top: pointer.y,
                 fill: 'transparent',
@@ -129,7 +130,7 @@ class Shapes{
                 selectable: true,
                 hasControls: true,
                 hasBorders: true,
-                // angle: 90
+                angle: starPoint === 2? 90: 0
 
             });
             if (fillColor.checked) {
@@ -144,9 +145,10 @@ class Shapes{
         }
 
     };
-    drawPolygon = (pointer) => {
+    drawPolygon = (pointer,polygonPoints) => {
+        let rotation = 121.9;
         if (!polygon) {
-            polygon = new fabric.Polygon(this.getPolygonPoints(pointer.x, pointer.y), {
+            polygon = new fabric.Polygon(this.getPolygonPoints(pointer.x, pointer.y, polygonPoints), {
                 left: pointer.x,
                 top: pointer.y,
                 fill: 'transparent',
@@ -154,7 +156,8 @@ class Shapes{
                 stroke: selectedColor,
                 selectable: true,
                 hasControls: true,
-                hasBorders: true
+                hasBorders: true,
+                angle: rotation
             });
             if (fillColor.checked) {
                 polygon.set({
@@ -231,10 +234,10 @@ class Shapes{
         canvas.contextContainer.globalAlpha = 1;
     };
     
-    getStarPoints = (x, y) => {
+    getStarPoints = (x, y,starPoints) => {
         const outerRadius = 30;
         const innerRadius = 15;
-        const numPoints = 6;
+        const numPoints = starPoints;
         const angleIncrement = (2 * Math.PI) / (numPoints * 2);
         const points = [];
 
@@ -249,12 +252,12 @@ class Shapes{
         return points;
 
     }
-    getPolygonPoints = (x, y) => {
+    getPolygonPoints = (x, y, polygonPoints) => {
         const radius = 15; 
-        const angleIncrement = (2 * Math.PI) / 4;
+        const angleIncrement = (2 * Math.PI) / polygonPoints;
         const points = [];
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < polygonPoints; i++) {
             const angle = i * angleIncrement;
             const pointX = x + radius * Math.cos(angle);
             const pointY = y + radius * Math.sin(angle);
@@ -326,8 +329,9 @@ const drawing = (event) =>{
             width: pointer.x - triangle.left,
             height: pointer.y - triangle.top,
         });
-    }else if (selectedTool === "star") {
-        shape.drawStar(pointer);
+    }else if (selectedTool === "star" || selectedTool === "chrisMassStar" || selectedTool === "octaStar" || selectedTool === "diamond") {
+        let starPoints = checkStarType(selectedTool);
+        shape.drawStar(pointer,starPoints);
         
         if(star) {
             const deltaX = pointer.x - star.left;
@@ -339,8 +343,9 @@ const drawing = (event) =>{
             star.scaleY = scaleFactor;
         }
         
-    }else if (selectedTool === "polygon") {
-        shape.drawPolygon(pointer);
+    }else if (selectedTool === "hexagon" || selectedTool === "pentagon" || selectedTool === "octagon") {
+        let polygonPoints = checkPolygonType( selectedTool);
+        shape.drawPolygon(pointer, polygonPoints);
         
         if(polygon){
             const deltaX = pointer.x - polygon.left;
@@ -359,6 +364,30 @@ const drawing = (event) =>{
     canvas.renderAll();
 }
 
+const checkStarType = (selectedTool) => {
+    let starPoints;
+    if(selectedTool === "diamond"){
+        starPoints = 2;
+    }else if(selectedTool === "star"){
+        starPoints = 5;
+    }else if(selectedTool === "chrisMassStar"){
+        starPoints = 4;
+    }else if(selectedTool === "octaStar"){
+        starPoints = 8;
+    }
+    return starPoints;
+}
+const checkPolygonType = (selectedTool) =>{
+    let polyPoints;
+    if(selectedTool === "pentagon"){
+        polyPoints = 5;
+    }else if(selectedTool === "hexagon"){
+        polyPoints = 6;
+    }else if(selectedTool === "octagon"){
+        polyPoints = 8;
+    }
+    return polyPoints;   
+}
 
 // Function to remove the selected object (delete from the canvas)
 const removeSelectedObject = () => {
