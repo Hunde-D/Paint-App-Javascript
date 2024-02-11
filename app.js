@@ -146,7 +146,7 @@ class Shapes{
 
     };
     drawPolygon = (pointer,polygonPoints) => {
-        let rotation = 121.9;
+        let rotation = polygonPoints === 4 ? 45: polygonPoints=== 5? 121.9 :0;
         if (!polygon) {
             polygon = new fabric.Polygon(this.getPolygonPoints(pointer.x, pointer.y, polygonPoints), {
                 left: pointer.x,
@@ -343,7 +343,7 @@ const drawing = (event) =>{
             star.scaleY = scaleFactor;
         }
         
-    }else if (selectedTool === "hexagon" || selectedTool === "pentagon" || selectedTool === "octagon") {
+    }else if (selectedTool === "hexagon" || selectedTool === "pentagon" || selectedTool === "octagon" || selectedTool === "square") {
         let polygonPoints = checkPolygonType( selectedTool);
         shape.drawPolygon(pointer, polygonPoints);
         
@@ -379,7 +379,9 @@ const checkStarType = (selectedTool) => {
 }
 const checkPolygonType = (selectedTool) =>{
     let polyPoints;
-    if(selectedTool === "pentagon"){
+    if(selectedTool === "square"){
+        polyPoints = 4;
+    }else if(selectedTool === "pentagon"){
         polyPoints = 5;
     }else if(selectedTool === "hexagon"){
         polyPoints = 6;
