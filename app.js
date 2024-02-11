@@ -25,6 +25,7 @@ const  fillColor = $("#fill-color"),
     unselectable_Obj = $('#unselectable'),
     selectable_Obj = $('#selectable'),
     duplicate_obj = $("#duplicate"),
+    clip = $("#clip"),
     saveImg = $("#save-img"),
     intersectionCheckbox = $('#intersection'),
     themeMode = $("#theme-mode"),
@@ -62,15 +63,7 @@ class Shapes{
             hasBorders: true
         });
 
-        //clip path
-
-        // var clipRect = new fabric.Rect({
-        //     left: 50,
-        //     top: 50,
-        //     width: 200,
-        //     height: 200
-        // });
-        // canvas.clipPath = clipRect;
+        
 
         if(fillColor.checked){
             rectangle.set({
@@ -252,6 +245,12 @@ class Shapes{
         canvas.freeDrawingBrush.width = 10;
         canvas.freeDrawingBrush.inverted = true;
         canvas.isDrawingMode = true;
+        
+    };
+    spray = () => {
+        canvas.freeDrawingBrush = new fabric.SprayBrush(canvas);
+        canvas.freeDrawingBrush.width = 25;
+        canvas.isDrawingMode = true;
     };
     getStarPoints = (x, y,starPoints) => {
         const outerRadius = 30;
@@ -294,7 +293,71 @@ const shape = new Shapes();
 
 //FUNCTIONS
 //---------
+const clipping = () =>{
+    
+    fabric.Object.prototype.transparentCorners = false;
+    var radius = 300;
+    canvas.preserveObjectStacking = true;
 
+    
+
+    fabric.Image.fromURL('img/img.png', function(img) {
+        var scalar = 1, abort;
+        var path = 'M 230 230 A 45 45, 0, 1, 1, 275 275 L 275 230 Z';
+        var shell = new fabric.Path(path, {
+            fill: '',
+            stroke: 'blue',
+            strokeWidth: 5,
+            scaleX: 2,
+            scaleY: 2,
+            lockScalingX: true,
+            lockScalingY: true,
+            lockSkewingX: true,
+            lockSkewingY: true,
+            originX: 'center',
+            originY: 'center',
+        });
+
+       
+        var clipPath = new fabric.Path(path, {
+            absolutePositioned: true,
+            originX: 'center',
+            originY: 'center',
+            scaleX: 2,
+            scaleY: 2
+        });
+
+        
+
+        // img.scale(0.5).set({
+        //     left: 200,
+        //     top: 180,
+        //     clipPath: clipPath
+        // });
+        
+        shell.on('moving', ({ e, transform, pointer }) => {
+            //  only because they are absolutePositioned
+            clipPath.setPositionByOrigin(shell.getCenterPoint(), 'center', 'center');
+            img.set('dirty', true);
+        });
+        shell.on('rotating', () => {
+            clipPath.set({ angle: shell.angle });
+            img.set('dirty', true);
+        });
+        shell.on('selected', () => {
+            abort();
+        });
+        shell.on('deselected', () => {
+            scalar = 1;
+        });
+        img.clipPath = clipPath;
+        canvas.add(img, shell);
+        canvas.add(drct,shell);
+        canvas.setActiveObject(img);
+        
+    });
+
+}
 // Function to start drawing (when the mouse button is pressed)
 const startDraw = (event) => {
     if (canvas.getActiveObject()) {
@@ -328,6 +391,10 @@ const startDraw = (event) => {
         // shape.drawText(event,pointer);
     }else if(selectedTool === "eraser"){
         shape.eraser();
+    }else if(selectedTool === "undo"){
+        shape.undo();
+    }else if(selectedTool === "spray"){
+        shape.spray();
     }
     canvas.renderAll(); // Force a redraw
 }
@@ -589,8 +656,13 @@ toolBtns.forEach(btn => {
             canvas.isDrawingMode = false;
         } else if (selectedTool === 'undo') {
             canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
-            canvas.freeDrawingBrush.inverted = true;
             canvas.freeDrawingBrush.width = 10;
+            canvas.freeDrawingBrush.inverted = true;
+            canvas.isDrawingMode = true;
+        }else if (selectedTool === 'spray') {
+            canvas.freeDrawingBrush = new fabric.SprayBrush(canvas);
+            canvas.freeDrawingBrush.width = 25;
+            canvas.isDrawingMode = true;
         }else if (selectedTool === 'eraser') {
             canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
         } else if (selectedTool === 'brush'|| selectedTool === 'pen') {
@@ -672,6 +744,10 @@ duplicate_obj.onclick = () => {
     copy();
     paste();
 };
+clip.onclick=() =>{
+    clipping();
+    
+}
 
 saveImg.onclick = () => save();
 
