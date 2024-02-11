@@ -2,6 +2,12 @@
 
 A JavaScript-based drawing application using the Model-View-Controller (MVC) pattern.
 
+## Demo
+
+[![Demo](img/demo.png)](https://hunde-d.github.io/Paint-App-Javascript)
+
+Check out the [live demo](https://hunde-d.github.io/Paint-App-Javascript) for a hands-on experience.
+
 ## Table of Contents
 
 - [Description](#description)
@@ -60,12 +66,6 @@ This drawing application allows users to create and manipulate various shapes on
 3. Click on the canvas to create or interact with objects.
 4. Use the provided buttons for additional actions (grouping, ungrouping, copying, etc.).
 5. Save your drawing as an image.
-
-## Demo
-
-[![Demo](img/demo.png)](https://hunde-d.github.io/Paint-App-Javascript)
-
-Check out the [live demo](https://hunde-d.github.io/Paint-App-Javascript) for a hands-on experience.
 
 ## Contributing
 
