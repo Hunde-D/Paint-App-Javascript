@@ -143,7 +143,7 @@ section{
 .c-btn:hover{
   background: none;
 }
-#duplicate, #remove{
+#duplicate, #remove, #clip{
   width: inherit;
 }
 .save-img{
@@ -159,8 +159,7 @@ section{
 .drawing-board{
   width: 64%;
   height: 100%;
-  /*flex: 1;*/
-  /*overflow: hidden;hidden*/
+
 }
 .drawing-board > #canvas{
   height: 100%;
@@ -284,6 +283,13 @@ p{
 .theme-toggle #selectMode:hover {
   background: none;
   border: 1px solid #111138;
+}
+.option label {
+  /* Add your font styles here */
+  font-size: 14px; /* Example: Change the font size */
+}
+*{
+  font-size: 14px;
 }
 @media (max-width: 1000px) {
   /* CSS rules for viewports 500px or less go here */
