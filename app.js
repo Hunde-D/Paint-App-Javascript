@@ -177,7 +177,7 @@ class Shapes{
     drawLine = (pointer,points) => {
         line = new fabric.Line(points, {
             strokeWidth: 2, // Width of the line
-            stroke: 'black' // Color of the line
+            stroke: selectedColor // Color of the line
         });
         canvas.add(line);
 
@@ -200,7 +200,6 @@ class Shapes{
     pen = ()=>{
 
         canvas.contextContainer.globalAlpha = 1;
-        // canvas.freeDrawingBrush.color = tool ==="eraser"? '#fff': "#C72C2CFF"
         canvas.freeDrawingBrush.color = selectedColor;
         canvas.freeDrawingBrush.shadow = new fabric.Shadow({
             color: selectedColor,
@@ -237,19 +236,19 @@ class Shapes{
     };
     eraser = () => {
         canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
-        canvas.freeDrawingBrush.width = 10;
+        canvas.freeDrawingBrush.width = brushWidth;
         canvas.isDrawingMode = true;
     };
     undo = () => {
         canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
-        canvas.freeDrawingBrush.width = 10;
+        canvas.freeDrawingBrush.width = brushWidth;
         canvas.freeDrawingBrush.inverted = true;
         canvas.isDrawingMode = true;
         
     };
     spray = () => {
         canvas.freeDrawingBrush = new fabric.SprayBrush(canvas);
-        canvas.freeDrawingBrush.width = 25;
+        canvas.freeDrawingBrush.width = brushWidth;
         canvas.freeDrawingBrush.color = selectedColor;
         canvas.isDrawingMode = true;
     };
@@ -291,6 +290,7 @@ class Shapes{
 }
 // Create a new instance of the Shapes class
 const shape = new Shapes();
+
 
 //FUNCTIONS
 //---------
@@ -759,7 +759,7 @@ clearCanvas.onclick = () => canvas.clear();
 
 // Event listener for size slider change
 sizeSlider.onchange = function() {
-    canvas.freeDrawingBrush.width = parseInt(this.value) || 3;
+    canvas.freeDrawingBrush.width = parseInt(this.value) || 5;
     brushWidth = parseInt(sizeSlider.value) || 5;
 };
 
